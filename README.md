@@ -1,52 +1,44 @@
-# DevelopersHub_AutoTagging
-**DevelopersHub Corporation — AI/ML Engineering Advanced Internship | Task 5**
+# Automated Support Ticket Classification and Tagging via NLP
 
-## Objective
-Automatically tag customer support tickets into categories using zero-shot and few-shot NLP techniques inspired by LLM prompting strategies.
+## 1. Project Overview
+This repository contains a Natural Language Processing (NLP) pipeline designed to automatically categorize customer support tickets. By implementing both zero-shot heuristic and few-shot machine learning techniques, the system effectively routes customer inquiries into specific domains, streamlining helpdesk workflows and reducing manual triage time.
 
-## Dataset
-- **Name:** Support Ticket Dataset (custom)
-- **Source:** Embedded directly in notebook — no download required
-- **Size:** 55 labeled tickets across 5 categories
-- **Categories:** Billing | Technical | Account | Shipping | General
+## 2. Research Objectives
+* **Automated Ticket Triage:** Develop a classification system to accurately assign support tickets to one of five core categories: Billing, Technical, Account, Shipping, or General.
+* **Paradigm Comparison:** Evaluate the performance trade-offs between zero-shot (keyword-based) classification and few-shot (statistical machine learning) approaches on a constrained dataset.
+* **Probabilistic Tagging:** Implement a Top-3 probability-ranked tag output to handle complex, multi-intent customer queries that span across multiple categories.
 
-## Approach / Methodology
-| Technique | Description | Analogy |
-|-----------|-------------|---------|
-| Zero-Shot | Keyword matching — no training data needed | LLM zero-shot prompting |
-| Few-Shot | TF-IDF + Logistic Regression on small labeled set | LLM few-shot prompting |
-| Top-3 Tags | Probability-ranked top 3 predictions per ticket | LLM ranked outputs |
+## 3. Dataset Characteristics
+The model is trained and evaluated on a curated Support Ticket Dataset representing common helpdesk inquiries.
+* **Volume:** 55 labeled tickets.
+* **Distribution:** 5 discrete categories.
+* **Integration:** Embedded directly within the notebook for immediate reproducibility without requiring external API calls or database connections.
 
-## Key Results
-| Method | Accuracy | F1 Score |
-|--------|----------|----------|
-| Zero-Shot (Keywords) | ~76% | ~0.75 |
-| Few-Shot (TF-IDF + LR) | ~85% | ~0.84 |
+## 4. Methodology & Architecture
+The project explores two distinct NLP classification strategies:
 
-**Observations:**
-- Zero-shot works well for distinct-vocabulary categories (Shipping, Billing)
-- Few-shot significantly improves ambiguous categories (Technical vs Account)
-- Top-3 tag output correctly surfaces multiple relevant categories for complex tickets
-- Bigrams (e.g., "not working", "credit card") are the most informative features
+* **Zero-Shot Classification (Heuristic):**
+  * Utilizes domain-specific keyword and bigram matching.
+  * Requires no prior training data or weight optimization. 
+  * Highly effective for distinct-vocabulary categories (e.g., Shipping, Billing).
+* **Few-Shot Classification (Statistical ML):**
+  * **Feature Extraction:** Term Frequency-Inverse Document Frequency (TF-IDF) vectorization to capture term importance and penalize common stop-word noise.
+  * **Model:** Logistic Regression classifier trained on a small subset of labeled data.
+  * **Inference:** Generates a softmax-style probability distribution across all classes to surface the Top-3 most relevant tags per ticket.
 
-## Top-3 Tag Output Example
-```
-Ticket: "My payment failed and now I cannot access my account"
-  #1 Billing     ████████   42.3%
-  #2 Account     ██████     28.1%
-  #3 Technical   ████       18.6%
-```
+## 5. Results and Key Takeaways
+* **Few-Shot Performance:** The TF-IDF + Logistic Regression pipeline achieved a peak **Accuracy of ~85%** and an **F1 Score of ~0.84**, significantly outperforming the zero-shot baseline on ambiguous queries (e.g., distinguishing between "Technical" and "Account" issues).
+* **Zero-Shot Baseline:** Achieved **~76% Accuracy** and **~0.75 F1 Score**, proving viable as a lightweight, cold-start fallback mechanism.
+* **Feature Importance:** Bigram features (e.g., "not working", "credit card") proved to be the strongest predictive indicators across all classes.
 
-## Production Notes
-- Pipeline exported via joblib for integration with ticketing systems (Zendesk, Jira, ServiceNow)
-- For higher accuracy: replace TF-IDF with LLM embeddings (OpenAI, Hugging Face) as a drop-in replacement
+## 6. Production & Deployment Notes
+* **Serialization:** The final inference pipeline is serialized via `joblib`, enabling rapid deployment into existing ticketing infrastructures (e.g., Zendesk, Jira, ServiceNow).
+* **Future Scope:** 
+  * Transition from sparse TF-IDF vectorization to dense contextual embeddings (e.g., Hugging Face, BERT) to capture deeper semantic relationships.
+  * Expand the dataset size to accommodate deep sequence models.
 
-## Tools & Libraries
-Python 3.10 | scikit-learn | pandas | numpy | matplotlib | seaborn | joblib
-
-## How to Run
-```bash
-pip install scikit-learn pandas numpy matplotlib seaborn joblib jupyter
-jupyter notebook Task5_Auto_Tagging.ipynb
-```
-Run all cells top to bottom. No internet or downloads required.
+## 7. Technology Stack
+* **Language:** Python 3.10
+* **Core Libraries:** scikit-learn, pandas, numpy
+* **Visualization:** matplotlib, seaborn
+* **Serialization:** joblib
